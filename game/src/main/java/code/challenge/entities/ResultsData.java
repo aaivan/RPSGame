@@ -2,8 +2,6 @@ package code.challenge.entities;
 
 import java.util.List;
 
-import code.challenge.manager.RoundsPlayedCounter;
-
 /**
  * Class to store all the rounds data
  *
@@ -14,14 +12,18 @@ public class ResultsData {
 	
 	private List<RoundInfo> roundsInfo;
 	
-	private int allUsersRoudsPlayed = RoundsPlayedCounter.getTotalRounds();
-	
-	public int getAllUsersRoudsPlayed() {
-		return allUsersRoudsPlayed;
+	private RoundsCounter roundsCounter;
+
+	public ResultsData() {
+		roundsCounter = RoundsCounter.getInstance();
 	}
 
-	public void setAllUsersRoudsPlayed(int allUsersRoudsPlayed) {
-		this.allUsersRoudsPlayed = allUsersRoudsPlayed;
+	public RoundsCounter getRoundsPlayedCounter() {
+		return roundsCounter;
+	}
+
+	public void setRoundsPlayedCounter(RoundsCounter roundsCounter) {
+		this.roundsCounter = roundsCounter;
 	}
 
 	public Player getPlayer() {

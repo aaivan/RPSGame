@@ -1,13 +1,17 @@
 package code.challenge.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Class to represent the player that always choose randomly
  *
  */
 public final class Player{
 	
-	private int roundsPlayed;
+	@JsonIgnore
+	private String playerIP;
 	
+	@JsonIgnore
 	private Shape shape;
 	
 	private int wins;
@@ -16,8 +20,14 @@ public final class Player{
 	
 	private int draws;
 
+	private int playedRounds;
+
+	public Player(String playerIP) {
+		this.playerIP = playerIP;
+	}
+
 	public int getRounds() {
-		return roundsPlayed;
+		return playedRounds;
 	}
 
 	public int getWins() {
@@ -45,7 +55,7 @@ public final class Player{
 	}
 
 	public void setRounds(int rounds) {
-		this.roundsPlayed = rounds;
+		this.playedRounds = rounds;
 	}
 	
 	public Shape getShape() {
@@ -54,6 +64,26 @@ public final class Player{
 
 	public void setShape(Shape shape) {
 		this.shape = shape;
+	}
+
+	public String getPlayerIP() {
+		return playerIP;
+	}
+
+	public void increaseWins() {
+		this.wins++;
+	}
+
+	public void increaseDefeats() {
+		this.defeats++;
+	}
+
+	public void increaseDraws() {
+		this.draws++;
+	}
+
+	public void increasePlayedRounds() {
+		this.playedRounds++;
 	}
 
 }

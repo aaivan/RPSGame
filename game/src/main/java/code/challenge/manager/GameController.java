@@ -1,10 +1,11 @@
 package code.challenge.manager;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import code.challenge.entities.ResultsData;
@@ -16,23 +17,23 @@ public class GameController {
 	@Autowired
 	private GameService gameService;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@GetMapping(value = "/")
 	public String showTitle() {
 
 		return "Wellcome to ROCK-PAPER-SCISSORS Game!!";
 	}
 
-	@RequestMapping(value = "/play", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<ResultsData> playRound() {
+	@GetMapping(value = "/play", produces = "application/json")
+	public ResponseEntity<ResultsData> playRound(HttpServletRequest request) {
 		
-		return new ResponseEntity<>(gameService.playRound(), HttpStatus.OK);
+		return new ResponseEntity<>(gameService.playRound(request.getRemoteAddr()), HttpStatus.OK);
 
 	}
 	
-	@RequestMapping(value = "/reset", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<ResultsData> resetGame() {
+	@GetMapping(value = "/reset", produces = "application/json")
+	public ResponseEntity<ResultsData> resetGame(HttpServletRequest request) {
 		
-		return new ResponseEntity<>(gameService.resetGame(), HttpStatus.OK);
+		return new ResponseEntity<>(gameService.resetGame(request.getRemoteAddr()), HttpStatus.OK);
 		
 	}
 
