@@ -22,23 +22,11 @@ public final class RoundsCounter {
 	 */
 	private int totalDraws;
 
-	private static RoundsCounter instance = new RoundsCounter();
-
-	private RoundsCounter() {
+	public RoundsCounter() {
 		// Initialize users map and counters
 		totalWinsPlayerOne = 0;
 		totalWinsPlayerTwo = 0;
 		totalDraws = 0;
-	}
-
-	/**
-	 * Every time this method is called an user is playing a round so we
-	 * increase totalRounds count
-	 * 
-	 * @return the only instance of RoundsPlayedCounter
-	 */
-	public static RoundsCounter getInstance() {
-		return instance;
 	}
 
 	public int getTotalWinsPlayerOne() {
@@ -47,6 +35,10 @@ public final class RoundsCounter {
 
 	public void setTotalWinsPlayerOne(int totalWinsPlayerOne) {
 		this.totalWinsPlayerOne = totalWinsPlayerOne;
+	}
+
+	public void setTotalWinsPlayerTwo(int totalWinsPlayerTwo) {
+		this.totalWinsPlayerTwo = totalWinsPlayerTwo;
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import code.challenge.common.ApplicationConstants;
 import code.challenge.entities.Player;
 import code.challenge.entities.ResultsData;
 import code.challenge.entities.RoundInfo;
@@ -17,9 +18,7 @@ public class GameService {
 
 	private static List<Player> players = new ArrayList<>();
 
-	private static List<RoundInfo> roundsInfo = new ArrayList<>();
-
-	private RoundsCounter roundsCounter = RoundsCounter.getInstance();
+	private static RoundsCounter roundsCounter = new RoundsCounter();
 
 	/**
 	 * Run one round of the game
@@ -32,15 +31,11 @@ public class GameService {
 		Player player = getOrCreatePlayer(playerIP);
 
 		ResultsData resultsData = new ResultsData();
-		Shape randomShape = Shape.getRandomShape();
 
-		player.setShape(randomShape);
-		player.increasePlayedRounds();
-
-		roundsInfo.add(buildRoundInfo(randomShape, player));
+		player.getRoundsInfo().add(buildRoundInfo(Shape.getRandomShape(), player));
 
 		resultsData.setPlayer(player);
-		resultsData.setRoundsInfo(roundsInfo);
+		resultsData.setRoundsCounter(roundsCounter);
 		return resultsData;
 	}
 
@@ -55,15 +50,28 @@ public class GameService {
 	 */
 	private Player getOrCreatePlayer(String playerIP) {
 		Optional<Player> storedPlayer = players.stream()
-				.filter(p -> p.getPlayerIP().equals(playerIP)).findFirst();
+				.filter(player -> haveSamePlayerIP(player.getPlayerIP(), playerIP))
+				.findFirst();
 
 		if (storedPlayer.isPresent()) {
 			return storedPlayer.get();
-		} else {
-			Player newPlayer = new Player(playerIP);
-			players.add(newPlayer);
-			return newPlayer;
 		}
+
+		Player newPlayer = new Player(playerIP);
+		players.add(newPlayer);
+		return newPlayer;
+	}
+
+	/**
+	 * Compare IPs
+	 * 
+	 * @param storedPlayerIP
+	 * @param playerIP
+	 * @return true if sotredPalyerIP and playerIP are equals, false otherwise
+	 */
+	private static boolean haveSamePlayerIP(String storedPlayerIP,
+			String playerIP) {
+		return storedPlayerIP.equals(playerIP);
 	}
 
 	/**
@@ -84,15 +92,15 @@ public class GameService {
 
 		switch (playResult) {
 		case 0:
-			resultMessage = "Draw!";
+			resultMessage = ApplicationConstants.DRAW_RESULT;
 			increaseDraws(player);
 			break;
 		case 1:
-			resultMessage = "Player 1 Wins!";
+			resultMessage = ApplicationConstants.PLAYER_ONE_WINS_RESULT;
 			increasePlayerOneWins(player);
 			break;
 		case 2:
-			resultMessage = "Player 2 Wins!";
+			resultMessage = ApplicationConstants.PLAYER_TWO_WINS_RESULT;
 			increasePlayerTwoWins(player);
 			break;
 		default:
@@ -104,7 +112,7 @@ public class GameService {
 	}
 
 	/**
-	 * Clear all the data of the player
+	 * Clear all the data of the player.
 	 * 
 	 * @param playerIP
 	 * @return ResultData object with empty roundsInfo and player counters
@@ -116,12 +124,11 @@ public class GameService {
 
 		if (player.getRounds() > 0) {
 			resetPlayer(player);
-			roundsInfo.clear();
 		}
 
 		ResultsData resultsData = new ResultsData();
 		resultsData.setPlayer(player);
-		resultsData.setRoundsInfo(roundsInfo);
+		resultsData.setRoundsCounter(roundsCounter);
 
 		return resultsData;
 	}
@@ -135,8 +142,7 @@ public class GameService {
 		player.setWins(0);
 		player.setDefeats(0);
 		player.setDraws(0);
-		player.setRounds(0);
-		player.setShape(null);
+		player.getRoundsInfo().clear();
 	}
 
 	/**
@@ -167,6 +173,22 @@ public class GameService {
 	private void increaseDraws(Player player) {
 		player.increaseDraws();
 		roundsCounter.addDraw();
+	}
+
+	public static List<Player> getPlayers() {
+		return players;
+	}
+
+	public static void setPlayers(List<Player> players) {
+		GameService.players = players;
+	}
+
+	public static RoundsCounter getRoundsCounter() {
+		return roundsCounter;
+	}
+
+	public static void setRoundsCounter(RoundsCounter roundsCounter) {
+		GameService.roundsCounter = roundsCounter;
 	}
 
 }

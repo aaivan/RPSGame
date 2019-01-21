@@ -1,5 +1,8 @@
 package code.challenge.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -11,23 +14,24 @@ public final class Player{
 	@JsonIgnore
 	private String playerIP;
 	
-	@JsonIgnore
-	private Shape shape;
-	
 	private int wins;
 	
 	private int defeats;
 	
 	private int draws;
 
-	private int playedRounds;
+	private List<RoundInfo> roundsInfo;
 
 	public Player(String playerIP) {
 		this.playerIP = playerIP;
+		this.roundsInfo = new ArrayList<>();
+		this.wins = 0;
+		this.defeats = 0;
+		this.draws = 0;
 	}
 
 	public int getRounds() {
-		return playedRounds;
+		return wins + defeats + draws;
 	}
 
 	public int getWins() {
@@ -54,20 +58,16 @@ public final class Player{
 		this.draws = draws;
 	}
 
-	public void setRounds(int rounds) {
-		this.playedRounds = rounds;
-	}
-	
-	public Shape getShape() {
-		return shape;
-	}
-
-	public void setShape(Shape shape) {
-		this.shape = shape;
-	}
-
 	public String getPlayerIP() {
 		return playerIP;
+	}
+
+	public List<RoundInfo> getRoundsInfo() {
+		return roundsInfo;
+	}
+
+	public void setRoundsInfo(List<RoundInfo> roundsInfo) {
+		this.roundsInfo = roundsInfo;
 	}
 
 	public void increaseWins() {
@@ -80,10 +80,6 @@ public final class Player{
 
 	public void increaseDraws() {
 		this.draws++;
-	}
-
-	public void increasePlayedRounds() {
-		this.playedRounds++;
 	}
 
 }

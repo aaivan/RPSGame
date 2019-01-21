@@ -2,6 +2,7 @@ package code.challenge.manager;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,28 @@ public class GameController {
 	@GetMapping(value = "/play", produces = "application/json")
 	public ResponseEntity<ResultsData> playRound(HttpServletRequest request) {
 		
-		return new ResponseEntity<>(gameService.playRound(request.getRemoteAddr()), HttpStatus.OK);
+		String userIP = request.getRemoteAddr();
+
+		if (StringUtils.isNotBlank(userIP)) {
+			return new ResponseEntity<>(gameService.playRound(userIP),
+					HttpStatus.OK);
+		}
+
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
 	}
 	
 	@GetMapping(value = "/reset", produces = "application/json")
 	public ResponseEntity<ResultsData> resetGame(HttpServletRequest request) {
 		
-		return new ResponseEntity<>(gameService.resetGame(request.getRemoteAddr()), HttpStatus.OK);
+		String userIP = request.getRemoteAddr();
+
+		if (StringUtils.isNotBlank(userIP)) {
+			return new ResponseEntity<>(gameService.resetGame(request
+					.getRemoteAddr()), HttpStatus.OK);
+		}
+
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		
 	}
 
