@@ -2,6 +2,10 @@ package code.challenge.entities;
 
 import java.util.Random;
 
+/**
+ * Enum class for game shapes
+ *
+ */
 public enum Shape {
 
 	ROCK, PAPER, SCISSORS;

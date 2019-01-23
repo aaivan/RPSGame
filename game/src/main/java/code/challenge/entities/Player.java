@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Class to represent the player that always choose randomly
+ * Class to represent the player that always choose randomly (the user)
  *
  */
 public final class Player{

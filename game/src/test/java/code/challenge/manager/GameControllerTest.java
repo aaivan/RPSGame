@@ -2,10 +2,15 @@ package code.challenge.manager;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -18,9 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import code.challenge.common.ApplicationConstants;
 import code.challenge.entities.ResultsData;
-import code.challenge.entities.Shape;
 
 /**
  * Test class for GameController
@@ -51,37 +54,31 @@ public class GameControllerTest {
 
 		mvc.perform(get("/play").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.player.wins", is(3)))
-				.andExpect(jsonPath("$.player.defeats", is(2)))
-				.andExpect(jsonPath("$.player.draws", is(1)))
-				.andExpect(jsonPath("$.player.rounds", is(6)))
-				.andExpect(jsonPath("$.player.roundsInfo.length()", is(1)))
+				.andExpect(view().name("index"))
+				.andExpect(forwardedUrl("index"))
+				.andExpect(model().attributeExists("playerRounds"))
 				.andExpect(
-						jsonPath("$.player.roundsInfo[0].playerOneShape",
-								is(Shape.PAPER.name())))
-				.andExpect(
-						jsonPath("$.player.roundsInfo[0].playerTwoShape",
-								is(Shape.ROCK.name())))
-				.andExpect(
-						jsonPath("$.player.roundsInfo[0].result",
-								is(ApplicationConstants.PLAYER_ONE_WINS_RESULT)))
-				.andExpect(
-						jsonPath("$.roundsCounter.totalWinsPlayerOne", is(5)))
-				.andExpect(
-						jsonPath("$.roundsCounter.totalWinsPlayerTwo", is(3)))
-				.andExpect(jsonPath("$.roundsCounter.totalDraws", is(1)))
-				.andExpect(jsonPath("$.roundsCounter.totalRounds", is(9)));
-
+						model().attribute(
+								"playerRounds", is(resultsData)));
+		
+        verify(service, times(1)).playRound(any(String.class));
+        verifyNoMoreInteractions(service);
 	}
-
+	
 	@Test
-	public void testPlayRoundFailure() throws Exception {
+	public void testPlayRoundServiceNotRun() throws Exception {
 
 		mvc.perform(get("/play").with(request -> {
 			request.setRemoteAddr(StringUtils.EMPTY);
 			return request;
-		}).contentType(MediaType.APPLICATION_JSON)).andExpect(
-				status().isUnauthorized());
+		}).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(view().name("index"))
+		.andExpect(forwardedUrl("index"))
+		.andExpect(model().attributeDoesNotExist("playerRounds"));
+
+		verify(service, times(0)).resetGame(any(String.class));
+		verifyNoMoreInteractions(service);
 
 	}
 
@@ -90,33 +87,46 @@ public class GameControllerTest {
 
 		ResultsData resultsData = TestUtils.buildResultsData(true);
 
-		when(service.playRound(any(String.class))).thenReturn(resultsData);
+		when(service.resetGame(any(String.class))).thenReturn(resultsData);
+		
+		mvc.perform(get("/reset").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(view().name("index"))
+		.andExpect(forwardedUrl("index"))
+		.andExpect(model().attributeExists("playerRounds"))
+		.andExpect(
+				model().attribute(
+						"playerRounds", is(resultsData)));
 
-		mvc.perform(get("/play").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.player.wins", is(0)))
-				.andExpect(jsonPath("$.player.defeats", is(0)))
-				.andExpect(jsonPath("$.player.draws", is(0)))
-				.andExpect(jsonPath("$.player.rounds", is(0)))
-				.andExpect(jsonPath("$.player.roundsInfo.length()", is(0)))
-				.andExpect(
-						jsonPath("$.roundsCounter.totalWinsPlayerOne", is(5)))
-				.andExpect(
-						jsonPath("$.roundsCounter.totalWinsPlayerTwo", is(3)))
-				.andExpect(jsonPath("$.roundsCounter.totalDraws", is(1)))
-				.andExpect(jsonPath("$.roundsCounter.totalRounds", is(9)));
+		verify(service, times(1)).resetGame(any(String.class));
+		verifyNoMoreInteractions(service);
 
 	}
 
 	@Test
-	public void testResetFailure() throws Exception {
+	public void testResetServiceNotRun() throws Exception {
 
 		mvc.perform(get("/reset").with(request -> {
 			request.setRemoteAddr(StringUtils.EMPTY);
 			return request;
-		}).contentType(MediaType.APPLICATION_JSON)).andExpect(
-				status().isUnauthorized());
+		}).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(view().name("index"))
+		.andExpect(forwardedUrl("index"))
+		.andExpect(model().attributeDoesNotExist("playerRounds"));
+
+		verify(service, times(0)).resetGame(any(String.class));
+		verifyNoMoreInteractions(service);
+
+	}
+	
+	@Test
+	public void testWrongMethodFailure() throws Exception {
+		
+		mvc.perform(get("/wrongPath").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
 
 	}
 
+	
 }
