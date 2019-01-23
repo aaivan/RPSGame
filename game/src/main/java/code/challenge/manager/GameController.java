@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import code.challenge.common.ApplicationConstants;
 import code.challenge.entities.ResultsData;
 
 
@@ -22,23 +23,23 @@ public class GameController {
 		String userIP = request.getRemoteAddr();
 		
 		if (StringUtils.isNotBlank(userIP)) {
-			ResultsData playerRounds = gameService.playRound(userIP);
-			model.addAttribute("playerRounds", playerRounds);
+			ResultsData resultsData = gameService.playRound(userIP);
+			model.addAttribute(ApplicationConstants.RESULTS_DATA_RESPONSE, resultsData);
 		}
 		
-		return "index";
+		return ApplicationConstants.INDEX_JSP;
 	}
 	
-	@GetMapping(value = "/reset", produces = "application/json")
+	@GetMapping(value = {"/", "/reset"}, produces = "application/json")
 	public String resetGame(HttpServletRequest request, Model model) {
 		String userIP = request.getRemoteAddr();
 		
 		if (StringUtils.isNotBlank(userIP)) {
-			ResultsData playerRounds = gameService.resetGame(userIP);
-			model.addAttribute("playerRounds", playerRounds);
+			ResultsData resultsData = gameService.resetGame(userIP);
+			model.addAttribute(ApplicationConstants.RESULTS_DATA_RESPONSE, resultsData);
 		}
 		
-		return "index";
+		return ApplicationConstants.INDEX_JSP;
 	}
 
 }

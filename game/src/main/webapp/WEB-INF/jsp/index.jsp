@@ -44,7 +44,7 @@
 	</div>
 
 	<!-- BUTTONS -->
-	<div class="row">
+	<div class="row" style="margin-top: 20px">
 		<div class="col-md-4" style="text-align: right;">
 			<form class="form-horizontal" action="/rps/play" method="GET">
 				<div class="form-group">
@@ -72,7 +72,7 @@
 	</div>
 
 	<!-- ROUNDS RESULTS -->
-	<div class="container text-center" style="margin-top: 10px">
+	<div class="container text-center">
 		<h3 style="color: #64ab3a">Rounds Results</h3>
 		<hr>
 
@@ -86,7 +86,7 @@
 				</div>
 				<div class="form-group col-md-4">
 					<input type="text" class="form-control" placeholder="0"
-						value="${playerRounds.player.rounds}" readonly />
+						value="${resultsData.player.rounds}" readonly />
 				</div>
 			</div>
 		</div>
@@ -106,7 +106,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var="round" items="${playerRounds.player.roundsInfo}">
+						<c:forEach var="round" items="${resultsData.player.roundsInfo}">
 							<tr>
 								<td>${round.playerOneShape}</td>
 								<td>${round.playerTwoShape}</td>
@@ -123,18 +123,18 @@
 					style="width: 100%">
 					<thead>
 						<tr>
-							<th>Total Rounds Played</th>
-							<th>Total Wins Player 1</th>
-							<th>Total Wins Player 2</th>
+							<th>Total Rounds</th>
+							<th>Total Wins P1</th>
+							<th>Total Wins P2</th>
 							<th>Total Draws</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>${playerRounds.roundsCounter.totalRounds}</td>
-							<td>${playerRounds.roundsCounter.totalWinsPlayerOne}</td>
-							<td>${playerRounds.roundsCounter.totalWinsPlayerTwo}</td>
-							<td>${playerRounds.roundsCounter.totalDraws}</td>
+							<td>${resultsData.roundsCounter.totalRounds}</td>
+							<td>${resultsData.roundsCounter.totalWinsPlayerOne}</td>
+							<td>${resultsData.roundsCounter.totalWinsPlayerTwo}</td>
+							<td>${resultsData.roundsCounter.totalDraws}</td>
 						</tr>
 					</tbody>
 				</table>

@@ -18,5 +18,9 @@ public final class ApplicationConstants {
 	public static final String USER_IP_1 = "192.168.1.101";
 
 	public static final String USER_IP_2 = "192.168.1.102";
-
+	
+	public static final String RESULTS_DATA_RESPONSE = "resultsData";
+	
+	public static final String INDEX_JSP = "index";
+	
 }

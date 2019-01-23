@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import code.challenge.common.ApplicationConstants;
 import code.challenge.entities.ResultsData;
 
 /**
@@ -56,10 +57,10 @@ public class GameControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("index"))
 				.andExpect(forwardedUrl("index"))
-				.andExpect(model().attributeExists("playerRounds"))
+				.andExpect(model().attributeExists(ApplicationConstants.RESULTS_DATA_RESPONSE))
 				.andExpect(
 						model().attribute(
-								"playerRounds", is(resultsData)));
+								ApplicationConstants.RESULTS_DATA_RESPONSE, is(resultsData)));
 		
         verify(service, times(1)).playRound(any(String.class));
         verifyNoMoreInteractions(service);
@@ -75,7 +76,7 @@ public class GameControllerTest {
 		.andExpect(status().isOk())
 		.andExpect(view().name("index"))
 		.andExpect(forwardedUrl("index"))
-		.andExpect(model().attributeDoesNotExist("playerRounds"));
+		.andExpect(model().attributeDoesNotExist(ApplicationConstants.RESULTS_DATA_RESPONSE));
 
 		verify(service, times(0)).resetGame(any(String.class));
 		verifyNoMoreInteractions(service);
@@ -93,10 +94,10 @@ public class GameControllerTest {
 		.andExpect(status().isOk())
 		.andExpect(view().name("index"))
 		.andExpect(forwardedUrl("index"))
-		.andExpect(model().attributeExists("playerRounds"))
+		.andExpect(model().attributeExists(ApplicationConstants.RESULTS_DATA_RESPONSE))
 		.andExpect(
 				model().attribute(
-						"playerRounds", is(resultsData)));
+						ApplicationConstants.RESULTS_DATA_RESPONSE, is(resultsData)));
 
 		verify(service, times(1)).resetGame(any(String.class));
 		verifyNoMoreInteractions(service);
@@ -113,11 +114,49 @@ public class GameControllerTest {
 		.andExpect(status().isOk())
 		.andExpect(view().name("index"))
 		.andExpect(forwardedUrl("index"))
-		.andExpect(model().attributeDoesNotExist("playerRounds"));
+		.andExpect(model().attributeDoesNotExist(ApplicationConstants.RESULTS_DATA_RESPONSE));
 
 		verify(service, times(0)).resetGame(any(String.class));
 		verifyNoMoreInteractions(service);
 
+	}
+	
+	@Test
+	public void testInitResetSuccess() throws Exception {
+		
+		ResultsData resultsData = TestUtils.buildResultsData(true);
+		
+		when(service.resetGame(any(String.class))).thenReturn(resultsData);
+		
+		mvc.perform(get("/").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(view().name("index"))
+		.andExpect(forwardedUrl("index"))
+		.andExpect(model().attributeExists(ApplicationConstants.RESULTS_DATA_RESPONSE))
+		.andExpect(
+				model().attribute(
+						ApplicationConstants.RESULTS_DATA_RESPONSE, is(resultsData)));
+		
+		verify(service, times(1)).resetGame(any(String.class));
+		verifyNoMoreInteractions(service);
+		
+	}
+	
+	@Test
+	public void testInitResetServiceNotRun() throws Exception {
+		
+		mvc.perform(get("/").with(request -> {
+			request.setRemoteAddr(StringUtils.EMPTY);
+			return request;
+		}).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(view().name("index"))
+		.andExpect(forwardedUrl("index"))
+		.andExpect(model().attributeDoesNotExist(ApplicationConstants.RESULTS_DATA_RESPONSE));
+		
+		verify(service, times(0)).resetGame(any(String.class));
+		verifyNoMoreInteractions(service);
+		
 	}
 	
 	@Test
